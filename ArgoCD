@@ -1,0 +1,21 @@
+1. What is ArgoCD?
+ArgoCD is a declarative, GitOps continuous delivery tool for Kubernetes. It follows the Pull Model: instead of a CI/CD tool (like Jenkins or GitHub Actions) "pushing" 
+code into your cluster, ArgoCD "pulls" configuration from your Git repository into the cluster.
+
+2. Why Use It? (The "SME" Reasoning)
+a) Drift Detection: If a developer manually changes a setting in the cluster (e.g., changes a traffic split to 100/0), ArgoCD detects that this doesn't match Git and 
+automatically "syncs" it back to the correct state.
+b) Self-Healing: If an Istio Gateway or an application pod is deleted by mistake, ArgoCD immediately recreates it.
+c) Version Control for Infra: Every change to your 3-layer defense (Timeouts, Retries) is recorded in Git. If a change breaks the site, you can "Rollback" with one click in Git.
+
+3. The Infrastructure (How it lives in AKS)
+ArgoCD runs as a set of pods within your cluster (usually in an argocd namespace). Its architecture consists of:
+a) API Server: Handles the Web UI and CLI requests.
+b) Repository Server: Keeps a local cache of your Git files.
+c) Application Controller: The "Brain." It compares the Live State (what’s in AKS) with the Desired State (what’s in Git).
+d) Redis: For fast data caching.
+
+4. Key Features & Functions
+a) Multi-Cluster Management: One ArgoCD instance can manage deployments across multiple AKS clusters (e.g., India, USA, and Europe).
+b) RBAC (Role-Based Access Control): You can define who can sync traffic rules and who can only view them.
+c) Visual Health Status: It provides a tree-view dashboard showing exactly which pods are healthy and which are out-of-sync.
